@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
 import { FlatList, StyleSheet, Text, View, SafeAreaView  } from 'react-native';
-import Header from "./components/Header"
-
+import Header from "./components/Header";
+import Task from "./components/Task";
+import AddTask from "./components/AddTask";
+import { v4 as uuidv4 } from 'uuid';
 export default function App() {
   const [tasks, setTasks] = useState([
       {"task":"HTML I","done":true, "id": "1"},
@@ -12,15 +14,23 @@ export default function App() {
       {"task":"JavaScript I","done":true, "id": "5"},
       {"task":"JavaScript II","done":false, "id": "6"}
   ])
+
+  const addTask = (text) =>{
+    setTasks(prevTasks=>{
+      return [{task:text, id:uuidv4()}
+        ,...prevTasks]
+    })
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Header/>
       <View style={styles.content}>
+        <AddTask addTask= {addTask}/>
         <View style={styles.list}>
         <FlatList
           data={tasks}
           renderItem={({item}) => (
-            <Text>{item.task}</Text>
+            <Task item={item}/>
           )}
         />
         </View>
