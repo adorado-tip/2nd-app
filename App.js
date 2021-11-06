@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { FlatList, StyleSheet, Text, View, SafeAreaView  } from 'react-native';
+import { FlatList, StyleSheet, View, SafeAreaView, Alert, TouchableWithoutFeedback, Keyboard  } from 'react-native';
 import Header from "./components/Header";
 import Task from "./components/Task";
 import AddTask from "./components/AddTask";
+import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 export default function App() {
   const [tasks, setTasks] = useState([
@@ -16,12 +17,23 @@ export default function App() {
   ])
 
   const addTask = (text) =>{
-    setTasks(prevTasks=>{
-      return [{task:text, id:uuidv4()}
-        ,...prevTasks]
+    if (!text) {
+      Alert.alert('No task?', 'Please add a task', [{text: 'OK'}])
+    }else {
+      setTasks(prevTasks=>{
+        return [{task:text, id:uuidv4()}
+          ,...prevTasks]
+      })
+    }
+  }
+
+  const deleteTask = id => {
+    setTasks(prevTasks=> {
+      return prevTasks.filter(task => task.id != id)
     })
   }
   return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     <SafeAreaView style={styles.container}>
       <Header/>
       <View style={styles.content}>
@@ -30,12 +42,15 @@ export default function App() {
         <FlatList
           data={tasks}
           renderItem={({item}) => (
-            <Task item={item}/>
+            <Task item={item}
+            deleteTask = {deleteTask}
+            />
           )}
         />
         </View>
       </View>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -45,9 +60,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   content: {
-    padding: 30
+    padding: 30,
+    backgroundColor: 'skyblue',
+    flex: 1
   },
   list: {
-    marginTop: 30
+    marginTop: 30,
+    backgroundColor: 'lightblue',
+    flex: 1
   }
 });
